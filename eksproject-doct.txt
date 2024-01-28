@@ -1,0 +1,60 @@
+I have organised Terraform scripts into modules for each component.
+
+modules-> vpc(For provision VPC with internet gateway and netgateway),
+	  sg(security group for rds and eks nodes), 
+	  eks(For provsion eks cluster with node group), 
+	  helm(For for deploy wordpress in eks cluster), 
+	  rds(For provsion rds),
+	  memecache(for provsion elastic cache)
+	  	  
+
+from root main.tf file you can pass variable parameter for modules.
+I have provision wordpress site on eks cluster using terraform with self-sign ssl certificate.
+
+To provision whole infra and wordpress site run below commands.
+
+Preinstall tools
+
+Terraform, helm, kubectl, awscli, certbot
+
+#To initialize and install all dependencies
+Terraform init
+
+#To Plan and check which resources terraform code provision
+Terraform plan
+
+#After check everything provision insta
+terraform apply
+
+it will provsion whole infra with rds and memecache.
+
+Now configure cluster with your local using kubeconfig file.
+run the below command to download kubeconfig file.
+
+aws eks --region <region> update-kubeconfig --name <cluster_name>
+
+now uncomment wordpress code in modules/helm/main.tf and run terraform apply command again.
+
+After the deployment you will get load balancer url. using it you can access wordpress site.
+
+first edit /etc/host file with your domain to access wordpress application on local domain name.
+like below configuration-
+
+<load balancer public ip>   narotamproject.com
+
+
+Now you can access wordpress application on local domain name.
+
+Now we have to create self sign ssl on for local domain using lets Encrpt.using below command.
+
+ sudo certbot certonly -d narotamproject.com
+ 
+ after the all detail filling we will get certificate in /etc/letsencrypt/live/ path.
+ 
+ now  configure this in nginx config file with domain and you can access service with ssl on local.
+ 
+ 
+
+
+
+
